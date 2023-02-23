@@ -1,2 +1,2 @@
 # CS3110-final-project
-The name is currently a place holder
+Group Members: Akash Dhiraj (ad739), 
