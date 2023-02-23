@@ -1,2 +1,2 @@
 # CS3110-final-project
-Group Members: Akash Dhiraj (ad739), 
+Group Members: Akash Dhiraj (ad739), Max Ma (mm2559)
