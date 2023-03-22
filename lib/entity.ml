@@ -1,15 +1,21 @@
-type t = {x: int; y: int}
-type dir = 
- | W of int
- | A of int
- | S of int
- | D of int
+type dir = W | A | S | D 
 
-let init x y = {x = x; y = y}
+type t = 
+  {
+    x: int; 
+    y: int;
+    speed: int;
+    look: dir
+  }
+
+let init x y speed = {x = x; y = y; speed=speed; look=D}
 let getx t = t.x
 let gety t = t.y
 let move t = function
-  | W dy ->  {t with y = t.y + dy}
-  | A dx ->  {t with x = t.x - dx}
-  | S dy ->  {t with y = t.y - dy}
-  | D dx ->  {t with x = t.x + dx}
+  | W ->  {t with y = t.y + t.speed; look = W}
+  | A ->  {t with x = t.x - t.speed; look = A}
+  | S ->  {t with y = t.y - t.speed; look = S}
+  | D ->  {t with x = t.x + t.speed; look = D}
+
+(**returns the sprite to render based on the direction the entity is facing*)
+let sprite t = raise (Failure "not implemented")

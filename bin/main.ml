@@ -5,27 +5,25 @@ let xdim = 100
 let ydim = 100
 let v = 5
 
-let rec draw_sprite (pl: t) = 
+let rec move_sprite (curr: t) = 
   clear_graph ();
-  fill_circle (getx pl) (gety pl) 10;
-  let shift = move pl in
-  match read_key () with
-  | '0' -> ()
-  | 'w' -> shift (W v) |> draw_sprite
-  | 'a' -> shift (A v) |> draw_sprite
-  | 's' -> shift (S v) |> draw_sprite
-  | 'd' -> shift (D v) |> draw_sprite
-  | _ -> draw_sprite pl
-
-
+  fill_circle curr.x  curr.y 10;
+  let new_state = if not (key_pressed ()) then curr
+  else
+    match read_key () with
+    | '0' -> exit 0
+    | 'w' -> move curr W 
+    | 'a' -> move curr A 
+    | 's' -> move curr S 
+    | 'd' -> move curr D 
+    | _ -> curr
+  in move_sprite new_state
 
 let main () = 
   open_graph ""; 
-  set_window_title "bullet physics";
+  set_window_title "blob move";
   set_color red;
-  match read_key with 
-  _ -> ();
   resize_window xdim ydim;
-  draw_sprite (init 50 50)
+  move_sprite (init 50 50 v)  
 
-let () = main ()
+let () = main (); 
