@@ -18,4 +18,4 @@ let move t = function
   | D ->  {t with x = t.x + t.speed; look = D}
 
 (**returns the sprite to render based on the direction the entity is facing*)
-let sprite t = raise (Failure "not implemented")
+let sprite _ = raise (Failure "not implemented")
