@@ -1,14 +1,13 @@
-type dir = W | A | S | D 
 type t = 
   {
     x: int; 
     y: int;
-    speed: int;
-    look: dir
+    vel_x: int;
+    vel_y: int;
+    acc: int
   }
 
 val init: int -> int -> int -> t
-val getx: t -> int
-val gety: t -> int
-val move: t -> dir -> t
-val sprite: t -> unit
+val move: t -> t
+val stop: t -> t
+val accelerate: t -> char -> t

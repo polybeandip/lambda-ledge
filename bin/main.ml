@@ -1,29 +1,27 @@
 open Graphics
 open Bullet.Entity
 
-let xdim = 100
-let ydim = 100
-let v = 5
+(*flushes key presses from queue*)
+let flush_kp () = while key_pressed () do
+  let _ = read_key ()
+  in ()
+done
 
 let rec move_sprite (curr: t) = 
   clear_graph ();
-  fill_circle curr.x  curr.y 10;
-  let new_state = if not (key_pressed ()) then curr
-  else
-    match read_key () with
-    | '0' -> exit 0
-    | 'w' -> move curr W 
-    | 'a' -> move curr A 
-    | 's' -> move curr S 
-    | 'd' -> move curr D 
-    | _ -> curr
-  in move_sprite new_state
+  fill_circle curr.x curr.y 10; (*change once we have a draw sprite method*)
+  let new_state = if not (key_pressed ()) then stop curr 
+  else 
+    let key = read_key() in 
+    flush_kp ();
+    if key = '0' then exit 0 else accelerate curr key
+  in new_state |> move |> move_sprite
 
-let main () = 
+let main xdim ydim = 
   open_graph ""; 
   set_window_title "blob move";
   set_color red;
   resize_window xdim ydim;
-  move_sprite (init 50 50 v)  
+  init (xdim/2) (ydim/2) 5 |> move_sprite
 
-let () = main (); 
+let () = main 600 450 ; 

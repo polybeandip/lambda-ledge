@@ -1,21 +1,24 @@
-type dir = W | A | S | D 
-
 type t = 
   {
     x: int; 
     y: int;
-    speed: int;
-    look: dir
+    vel_x: int;
+    vel_y: int;
+    acc: int
   }
 
-let init x y speed = {x = x; y = y; speed=speed; look=D}
-let getx t = t.x
-let gety t = t.y
-let move t = function
-  | W ->  {t with y = t.y + t.speed; look = W}
-  | A ->  {t with x = t.x - t.speed; look = A}
-  | S ->  {t with y = t.y - t.speed; look = S}
-  | D ->  {t with x = t.x + t.speed; look = D}
+let init x y acc = {x = x; y = y; vel_x = 0; vel_y = 0; acc=acc}
+let set_vel curr vel_x vel_y = {curr with vel_x = vel_x; vel_y = vel_y}
+let move curr = {curr with y = curr.y + curr.vel_y; x = curr.x + curr.vel_x}
+let stop curr = set_vel curr 0 0
+let accelerate curr c = 
+  let set_vel = set_vel curr in
+  match c with
+  | 'w' -> set_vel curr.vel_x (curr.vel_y + curr.acc)
+  | 'a' -> set_vel (curr.vel_x - curr.acc) curr.vel_y
+  | 's' -> set_vel curr.vel_x (curr.vel_y - curr.acc)
+  | 'd' -> set_vel (curr.vel_x + curr.acc)  curr.vel_y
+  | _ -> stop curr
 
 (**returns the sprite to render based on the direction the entity is facing*)
-let sprite _ = raise (Failure "not implemented")
+let _sprite _ = raise (Failure "not implemented")
