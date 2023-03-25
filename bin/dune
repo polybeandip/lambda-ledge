@@ -1,3 +1,3 @@
 (executable
  (name main)
- (libraries bullet graphics unix))
+ (libraries bullet tsdl unix))
