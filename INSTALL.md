@@ -1,1 +1,1 @@
-Clone the repository, install the Graphics library with `opam install graphics`, run `dune exec bin/main.exe` to start the game
+Clone the repository, install the Tsdl library with `opam install tsdl`, run `make play` to start the game
