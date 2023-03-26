@@ -10,7 +10,12 @@ type t =
 type key_pressed = {w:bool;a:bool;s:bool;d:bool}
 
 let init x y acc = {x = x; y = y; vel_x = 0; vel_y = 0; acc=acc}
-let set_vel vel_x vel_y curr = {curr with vel_x = vel_x; vel_y = vel_y}
+let set_vel vel_x vel_y curr = 
+  {
+    curr with 
+    vel_x = if vel_x >= 10 then 10 else if vel_x <= -10 then -10 else vel_x; 
+    vel_y = if vel_y >= 10 then 10 else if vel_y <= -10 then -10 else vel_y
+  }
 let move curr = {curr with y = curr.y + curr.vel_y; x = curr.x + curr.vel_x}
 let stop curr = set_vel 0 0 curr
 let accelerate curr kp = 
