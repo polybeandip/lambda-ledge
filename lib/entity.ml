@@ -1,29 +1,35 @@
+type dir = U | D | L | R
+
 type t = 
   {
     x: int; 
     y: int;
-    vel_x: int;
-    vel_y: int;
-    acc: int
+    speed: int;
+    dir: dir
   }
 
 type key_pressed = {w:bool;a:bool;s:bool;d:bool}
 
-let init x y acc = {x = x; y = y; vel_x = 0; vel_y = 0; acc=acc}
-let set_vel vel_x vel_y curr = 
-  {
-    curr with 
-    vel_x = if vel_x >= 10 then 10 else if vel_x <= -10 then -10 else vel_x; 
-    vel_y = if vel_y >= 10 then 10 else if vel_y <= -10 then -10 else vel_y
-  }
-let move curr = {curr with y = curr.y + curr.vel_y; x = curr.x + curr.vel_x}
-let stop curr = set_vel 0 0 curr
-let accelerate curr kp = 
-  curr 
-  |> (if kp.w then set_vel curr.vel_x (curr.vel_y - curr.acc) else Fun.id)
-  |> (if kp.a then set_vel (curr.vel_x - curr.acc) curr.vel_y else Fun.id)
-  |> (if kp.s then set_vel curr.vel_x (curr.vel_y + curr.acc) else Fun.id)
-  |> (if kp.d then set_vel (curr.vel_x + curr.acc)  curr.vel_y else Fun.id)
+let init x y v = {x = x; y = y; speed = v; dir = R}
+let move curr kp= 
+  let x = ref curr.x in
+  let y = ref curr.y in
+  match kp with {w; a; s; d} ->
+    if w then y := !y - curr.speed else ();
+    if a then x := !x - curr.speed else ();
+    if d then x := !x + curr.speed else ();
+    if s then y := !y + curr.speed else ();
+    let dir = match !x - curr.x, !y - curr.y with
+      | 0,0 -> curr.dir
+      | x, 0 -> if x < 0 then L else R
+      | _, y -> if y < 0 then U else D
+    in {curr with y = !y; x = !x; dir = dir}
 
 (**returns the sprite to render based on the direction the entity is facing*)
-let _sprite _ = raise (Failure "not implemented")
+let sprite curr num = 
+  let prefix = match curr.dir with
+  | U -> "sprites/up" 
+  | D -> "sprites/down" 
+  | L -> "sprites/left" 
+  | R -> "sprites/right" 
+  in prefix ^ string_of_int num ^ ".bmp"

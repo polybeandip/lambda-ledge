@@ -1,15 +1,15 @@
+type dir = U | D | L | R
+
 type t = 
   {
     x: int; 
     y: int;
-    vel_x: int;
-    vel_y: int;
-    acc: int
+    speed: int;
+    dir : dir
   }
 
 type key_pressed = {w:bool;a:bool;s:bool;d:bool}
 
 val init: int -> int -> int -> t
-val move: t -> t
-val stop: t -> t
-val accelerate: t -> key_pressed -> t
+val move: t -> key_pressed -> t
+val sprite: t -> int -> string
