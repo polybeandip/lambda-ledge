@@ -61,4 +61,4 @@ let sprite curr num =
   in
   if num = 0 then index else index + 8
 
-let sprite_set = List.map (fun x ->  x ^ ".bmp") ["up0"; "down0"; "left0";"right0"; "right0"; "right0"; "right0"; "right0"]
+let sprite_set = List.map (fun x ->  x ^ ".bmp") ["right-up"; "right"; "left";"right"; "right"; "left"; "right-up"; "left-up"]
