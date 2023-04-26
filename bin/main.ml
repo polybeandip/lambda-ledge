@@ -43,11 +43,10 @@ let update game_state =
 (*****************************************************************)
 (* DRAW: functions for drawing data onto screen *)
 (*****************************************************************)
-let draw_texture render texture x y =
-  let open Gamedata in
+let draw_texture render texture x y w h =
   match
     Sdl.render_copy
-      ~dst:(Sdl.Rect.create ~w:tile_size ~h:tile_size ~x ~y)
+      ~dst:(Sdl.Rect.create ~w:w ~h:h ~x ~y)
       render texture
   with
   | Error (`Msg e) ->
@@ -57,13 +56,15 @@ let draw_texture render texture x y =
 
 let draw_map render game_state =
   let open Gamedata in
+  let bg = match !background with Some x -> x | None -> raise (Failure "fuck") in
   let m = game_state.map in
   let tiles = !tiles in
   let draw_tile n tile_x tile_y =
     draw_texture render
-      (Util.weird_get tiles (n - 1))
-      (tile_size * tile_x) (tile_size * tile_y)
+      (Util.weird_get tiles n )
+      (tile_size * tile_x) (tile_size * tile_y) tile_size tile_size
   in
+  draw_texture render bg 0 0 screen_w screen_h;
   for i = 0 to tile_screen_col -1 do
     for j = 0 to tile_screen_row -1 do
       let n = Map.get_tile m i j in
@@ -72,8 +73,9 @@ let draw_map render game_state =
   done
 
 let repaint render game_state =
+  let open Gamedata in
   let curr = game_state.player in
-  let player_sprites = !Gamedata.player_sprites in
+  let player_sprites = !player_sprites in
   match Sdl.render_clear render with
   | Error (`Msg e) ->
       Sdl.log "Render clear error: %s" e;
@@ -82,8 +84,8 @@ let repaint render game_state =
       draw_map render game_state;
       let x = Entity.get_x curr in
       let y = Entity.get_y curr in
-      draw_texture render
-        (Util.weird_get player_sprites (Entity.sprite curr 0)) x y;
+      draw_texture render 
+        (Util.weird_get player_sprites (Entity.sprite curr 0)) x y tile_size tile_size;
       Sdl.render_present render;
       Sdl.pump_events ()
 
