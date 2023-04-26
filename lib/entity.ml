@@ -22,6 +22,10 @@ type key_pressed = {
   d : bool;
 }
 
+let get_x curr = curr.x
+
+let get_y curr = curr.y
+
 let init x y v = { x; y; speed = v; dir = R }
 
 let move curr kp =
@@ -46,7 +50,6 @@ let move curr kp =
       in
       { curr with y = !y; x = !x; dir }
 
-(**returns the sprite to render based on the direction the entity is facing*)
 let sprite curr num =
   let index = 
   match curr.dir with

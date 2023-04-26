@@ -1,28 +1,20 @@
 open Tsdl
 open Bullet
-open Bullet.Entity
 
+(** [game_state] represents the current state of the game*)
 type game_state = {
-  player : Bullet.Entity.t;
-  player_sprites : Sdl.texture Array.t;
+  map : Map.t;
+  player : Entity.t;
   flip : int;
-  tiles : Sdl.texture Array.t;
 }
 
-(* Screen Settings *)
-let original_tile_size = 16 (* 16x16 tile *)
-let scale = 3
-let tile_size = scale * original_tile_size (* 48x48 tile *)
-let tile_screen_col = 16
-let tile_screen_row = 12
-let screen_w = tile_screen_col * tile_size (* 768 pixels *)
-let screen_h = tile_screen_row * tile_size (* 576 pixels *)
-
+(*****************************************************************)
 (* UPDATE: functions for updating game_state *)
-let move_sprite (curr : t) =
+(*****************************************************************)
+let move_sprite (curr : Entity.t) =
   Sdl.pump_events ();
   let keys = Sdl.get_keyboard_state () in
-  let pressed =
+  let pressed : Entity.key_pressed =
     {
       w = keys.{Sdl.Scancode.w} = 1;
       a = keys.{Sdl.Scancode.a} = 1;
@@ -30,14 +22,29 @@ let move_sprite (curr : t) =
       d = keys.{Sdl.Scancode.d} = 1;
     }
   in
-  move curr pressed
+  Entity.move curr pressed
+
+let check_collision shift map =
+  let open Gamedata in
+  let x1 = (Entity.get_x shift + 8)/tile_size in
+  let y1 = (Entity.get_y shift + 8)/tile_size in
+  let x2 = (Entity.get_x shift - 8)/tile_size + 1 in
+  let y2 = (Entity.get_y shift - 8)/tile_size + 1 in
+  let f = Map.check_collision map in
+  (f x1 y1) || (f x2 y1) || (f x2 y1) || (f x2 y2)
 
 let update game_state =
-  let curr = game_state.player in
-  { game_state with player = move_sprite curr; flip = 1 - game_state.flip }
+  let shift = game_state.player |> move_sprite in
+  if check_collision shift game_state.map = false then
+  { game_state with player = shift; flip = 1 - game_state.flip }
+  else
+  { game_state with flip = 1 - game_state.flip }
 
+(*****************************************************************)
 (* DRAW: functions for drawing data onto screen *)
+(*****************************************************************)
 let draw_texture render texture x y =
+  let open Gamedata in
   match
     Sdl.render_copy
       ~dst:(Sdl.Rect.create ~w:tile_size ~h:tile_size ~x ~y)
@@ -48,46 +55,41 @@ let draw_texture render texture x y =
       exit 1
   | Ok () -> ()
 
-let draw_background render data game_state =
-  let ic = open_in data in
+let draw_map render game_state =
+  let open Gamedata in
+  let m = game_state.map in
+  let tiles = !tiles in
   let draw_tile n tile_x tile_y =
     draw_texture render
-      (Array.get game_state.tiles (n - 1))
+      (Util.weird_get tiles (n - 1))
       (tile_size * tile_x) (tile_size * tile_y)
   in
-  let rec read_line ch ln =
-    let split = try input_line ch with End_of_file -> "EOF" in
-    if split = "EOF" then ()
-    else
-      let lst = List.map int_of_string (String.split_on_char ' ' split) in
-      let index = ref ~-1 in
-      List.iter
-        (fun x ->
-          index := !index + 1;
-          draw_tile x !index ln)
-        lst;
-      read_line ch (ln + 1)
-  in
-  read_line ic 0;
-  close_in ic
+  for i = 0 to tile_screen_col -1 do
+    for j = 0 to tile_screen_row -1 do
+      let n = Map.get_tile m i j in
+      draw_tile n i j
+    done
+  done
 
 let repaint render game_state =
   let curr = game_state.player in
-  let player_sprites = game_state.player_sprites in
+  let player_sprites = !Gamedata.player_sprites in
   match Sdl.render_clear render with
   | Error (`Msg e) ->
       Sdl.log "Render clear error: %s" e;
       exit 1
   | Ok () ->
-      ();
-      draw_background render "maps/map.txt" game_state;
+      draw_map render game_state;
+      let x = Entity.get_x curr in
+      let y = Entity.get_y curr in
       draw_texture render
-        (Array.get player_sprites (sprite curr 0))
-        curr.x curr.y;
+        (Util.weird_get player_sprites (Entity.sprite curr 0)) x y;
       Sdl.render_present render;
       Sdl.pump_events ()
 
-(* Game loop *)
+(*****************************************************************)
+(* Init + Game Loop: the entry point into the game and game loop *)
+(*****************************************************************)
 let rec loop render gs =
   let draw_interval = 0.016666 in
   let next_draw = Unix.gettimeofday () +. draw_interval in
@@ -99,28 +101,10 @@ let rec loop render gs =
   if (Sdl.get_keyboard_state ()).{Sdl.Scancode.q} = 1 then ()
   else loop render gs
 
-(* Init *)
-let make_texture render path =
-  let path = "sprites/" ^ path in
-  let surface =
-    match Sdl.load_bmp path with
-    | Error (`Msg e) ->
-        Sdl.log "Load sprite error: %s" e;
-        exit 1
-    | Ok x -> x
-  in
-  match Sdl.create_texture_from_surface render surface with
-  | Error (`Msg e) ->
-      Sdl.log "Create texture error: %s" e;
-      exit 1
-  | Ok x -> x
-
-let load_sprites render sprites =
-  List.map (make_texture render) sprites |> Array.of_list
-
 let main () = match Sdl.init Sdl.Init.(video + events) with
 | Error (`Msg e) -> Sdl.log "Init error: %s" e; exit 1
 | Ok () ->
+    let open Gamedata in
     match Sdl.create_window ~w:screen_w ~h:screen_h "SDL OpenGL" Sdl.Window.opengl with
     | Error (`Msg e) -> Sdl.log "Create window error: %s" e; exit 1
     | Ok w ->
@@ -135,12 +119,12 @@ let main () = match Sdl.init Sdl.Init.(video + events) with
       | Error (`Msg e) -> Sdl.log "Render clear error: %s" e; exit 1
       | Ok _ -> ();
     Sdl.render_present render;
+    load_sprites render;
     let gs = 
       {
-        player = init (screen_w/2) (screen_h/2) 10; 
+        map = Map.make_map "maps/map.txt";
+        player = Entity.init tile_size (screen_h - 2*tile_size) 10; 
         flip = 0; 
-        player_sprites = load_sprites render Entity.sprite_set;
-        tiles = load_sprites render Tile.tile_set
       } 
     in
     loop render gs;

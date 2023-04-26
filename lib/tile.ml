@@ -10,3 +10,7 @@ let tile_set =
     (fun x -> Str.string_match regex x 0)
     ("sprites" |> Sys.readdir |> Array.to_list)
   |> List.sort tile_cmp
+
+let solid t =
+  if t = 2 then true
+  else false
