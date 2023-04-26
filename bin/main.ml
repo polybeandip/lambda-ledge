@@ -25,13 +25,15 @@ let move_sprite (curr : Entity.t) =
   Entity.move curr pressed
 
 let check_collision shift map =
+  let x = Entity.get_x shift in
+  let y = Entity.get_y shift in
   let open Gamedata in
-  let x1 = (Entity.get_x shift + 8)/tile_size in
-  let y1 = (Entity.get_y shift + 8)/tile_size in
-  let x2 = (Entity.get_x shift - 8)/tile_size + 1 in
-  let y2 = (Entity.get_y shift - 8)/tile_size + 1 in
-  let f = Map.check_collision map in
-  (f x1 y1) || (f x2 y1) || (f x2 y1) || (f x2 y2)
+  let x1 = x + 4 in
+  let y1 = y in
+  let x2 = x + tile_size -6 in
+  let y2 = y + tile_size - 6 in
+  let f a b = Map.check_collision map (a/tile_size) (b/tile_size) in
+  (f x1 y1) || (f x1 y2) || (f x2 y1) || (f x2 y2)
 
 let update game_state =
   let shift = game_state.player |> move_sprite in
@@ -122,10 +124,11 @@ let main () = match Sdl.init Sdl.Init.(video + events) with
       | Ok _ -> ();
     Sdl.render_present render;
     load_sprites render;
-    let gs = 
+    let m = Map.make_map "maps/map.txt" in
+    let gs = match Map.get_spawn m with (a,b) ->
       {
-        map = Map.make_map "maps/map.txt";
-        player = Entity.init tile_size (screen_h - 2*tile_size) 10; 
+        map = m;
+        player = Entity.init (a*tile_size) (b*tile_size) 8; 
         flip = 0; 
       } 
     in
