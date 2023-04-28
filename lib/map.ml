@@ -47,6 +47,6 @@ let get_spawn m = m.spawn
 
 let get_exit m = m.exit
 
-let check_collision m x y =
+let in_solid m x y =
   get_tile m x y |> Tile.solid
 

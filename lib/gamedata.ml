@@ -32,8 +32,6 @@ let background = ref None
 
 let load_sprites render =
   let f x = Some (make_texture render x) in
-  player_sprites := List.map f Entity.sprite_set |> Array.of_list;
+  player_sprites := List.map f Player.sprite_set |> Array.of_list;
   tiles := List.map f Tile.tile_set |> Array.of_list;
   background := Some (make_texture render "background.bmp")
-
-
