@@ -2,8 +2,8 @@
 let original_tile_size = 16 (* 16x16 tile *)
 let scale = 3
 let tile_size = scale * original_tile_size (* 48x48 tile *)
-let tile_screen_col = 16
-let tile_screen_row = 12
+let tile_screen_col = 20
+let tile_screen_row = 15
 let screen_w = tile_screen_col * tile_size (* 768 pixels *)
 let screen_h = tile_screen_row * tile_size (* 576 pixels *)
 
@@ -26,12 +26,29 @@ let make_texture render path =
 
 let player_sprites = ref (Array.make 0 None)
 
+let player_sprite_names =
+  List.map
+    (fun x -> "player/" ^ x ^ ".bmp")
+    [ "walk-left"; "walk-right"; "left"; "right"; "left-up"; "right-up" ]
+
 let tiles = ref (Array.make 0 None)
+let regex = Str.regexp "tile[0-9]+.bmp"
+
+let tile_cmp t1 t2 =
+  let f x = String.length x - 8 |> String.sub x 4 |> int_of_string in
+  let cmp1, cmp2 = (f t1, f t2) in
+  cmp1 - cmp2
+
+let tile_names =
+  List.filter
+    (fun x -> Str.string_match regex x 0)
+    ("sprites/tile" |> Sys.readdir |> Array.to_list)
+  |> List.sort tile_cmp |> List.map (fun x -> "tile/" ^ x)
 
 let background = ref None
 
 let load_sprites render =
   let f x = Some (make_texture render x) in
-  player_sprites := List.map f Player.sprite_set |> Array.of_list;
-  tiles := List.map f Tile.tile_set |> Array.of_list;
-  background := Some (make_texture render "background.bmp")
+  player_sprites := List.map f player_sprite_names |> Array.of_list;
+  tiles := List.map f tile_names |> Array.of_list;
+  background := Some (make_texture render "background/background.bmp")

@@ -1,83 +1,133 @@
-type dir =
+type t = {
+  x : int;
+  y : int;
+  v_y : int;
+  on_ground : bool;
+  idle : bool;
+  dir : dir;
+}
+
+and dir =
   | U
   | D
   | L
   | R
-  | UR
-  | UL
-  | DR
-  | DL
-
-type t = {
-  x : int;
-  y : int;
-  falling : bool;
-  dir : dir;
-}
 
 type key_pressed = {
-  a : bool;
-  d : bool;
-  space : bool;
+  l : int;
+  r : int;
+  u : int;
+  d : int;
+  c : int;
 }
 
-let speed = 10
-let vert = 48*3
-let gravity = 1
-
+let v_x = 7
+let gravity = 10
+let jump_force = 10
+let dash = 20
+let cap_x = Gamedata.(screen_w - tile_size)
+let cap_y = Gamedata.(screen_h - tile_size)
+let jump_hold_time = 10
+let local_hold_time = ref 0
+let float = ref false
 let get_x curr = curr.x
 let get_y curr = curr.y
-let is_falling curr = curr.falling
-let set_falling curr b = {curr with falling = b}
-let init x y = { x; y; dir = R; falling = false}
-let fall curr = {curr with y = curr.y + gravity}
+let init x y = { x; y; dir = R; v_y = 0; idle = true; on_ground = false }
 
-let move curr kp =
-  let x = ref curr.x in
-  let y = ref curr.y in
-  let og = ref curr.falling in
-  match kp with
-  | { a; d; space} ->
-      if space && (not !og) then (y := !y - vert; og := not !og) else ();
-      if a then x := !x - speed else ();
-      if d then x := !x + speed else ();
-      let dir =
-        match (!x - curr.x, !y - curr.y) with
-        | 0, 0 -> curr.dir
-        | x, 0 -> if x < 0 then L else R
-        | 0, y -> if y < 0 then U else D
-        | x, y ->
-            if x < 0 && y > 0 then UL
-            else if x > 0 && y > 0 then UR
-            else if x < 0 && y < 0 then DL
-            else DR
-      in
-      { y = !y; x = !x; dir; falling = !og}
-
-let sprite curr num =
+let sprite p num =
   let index =
-    match curr.dir with
-    | U -> 0
-    | D -> 1
-    | L -> 2
-    | R -> 3
-    | UR -> 4
-    | UL -> 5
-    | DR -> 6
-    | DL -> 7
+    match (p.idle, p.dir) with
+    | true, U -> 4
+    | true, D -> 5
+    | true, L -> 0
+    | true, R -> 1
+    | false, U -> 4
+    | false, D -> 5
+    | false, L -> 2
+    | false, R -> 3
   in
   if num = 0 then index else index + 8
 
-let sprite_set =
-  List.map
-    (fun x -> x ^ ".bmp")
-    [
-      "right-up";
-      "right";
-      "left";
-      "right";
-      "right";
-      "left";
-      "right-up";
-      "left-up";
-    ]
+let in_solid map x y =
+  Map.in_solid map (x / Gamedata.tile_size) (y / Gamedata.tile_size)
+
+let check_collision x y map =
+  let x1 = x + 10 in
+  let y1 = y in
+  let x2 = x + Gamedata.tile_size - 10 in
+  let y2 = y + Gamedata.tile_size - 10 in
+  let f = in_solid map in
+  f x1 y1 || f x1 y2 || f x2 y1 || f x2 y2
+
+let on_ground player map =
+  let x1 = player.x + 10 in
+  let x2 = player.x + Gamedata.tile_size - 10 in
+  let y = player.y + Gamedata.tile_size + 6 in
+  let f = in_solid map in
+  if player.y >= cap_y - 6 then player.y >= cap_y else f x1 y || f x2 y
+
+let set_pos p delta_x delta_y map =
+  if delta_y <= 0 && delta_y > -10 then float := true else ();
+  let pos_x =
+    if p.x + delta_x < 0 then 0
+    else if p.x + delta_x >= cap_x then cap_x
+    else p.x + delta_x
+  in
+  let pos_y =
+    if p.y + delta_y < 0 then 0
+    else if p.y + delta_y >= cap_y then cap_y
+    else p.y + delta_y
+  in
+  if check_collision pos_x pos_y map = false then
+    { p with x = pos_x; y = pos_y }
+  else if check_collision pos_x p.y map = false then
+    { p with x = pos_x; y = p.y }
+  else if check_collision p.x pos_y map = false then
+    { p with x = p.x; y = pos_y }
+  else p
+
+let dir p kp =
+  match (kp.r - kp.l, kp.u - kp.d) with
+  | 0, 0 -> p.dir
+  | 0, 1 -> U
+  | 0, -1 -> D
+  | 1, _ -> R
+  | -1, _ -> L
+  | _ -> failwith "Not possible"
+
+let idle kp = kp.l = 0 && kp.r = 0 && kp.c = 0
+let vel_x kp = (kp.r - kp.l) * v_x
+
+let vel_y (p : t) (kp : key_pressed) =
+  if p.on_ground then
+    let v_y =
+      if kp.c = 1 then (
+        local_hold_time := jump_hold_time;
+        -jump_force)
+      else 0
+    in
+    v_y
+  else if !local_hold_time > 0 && kp.c = 1 then (
+    local_hold_time := !local_hold_time - 1;
+    p.v_y - jump_force)
+  else if !local_hold_time > 0 && kp.c = 0 then (
+    local_hold_time := 0;
+    p.v_y + gravity)
+  else
+    p.v_y
+    +
+    if !float then (
+      float := false;
+      gravity / 2)
+    else gravity
+
+let update (p : t) (kp : key_pressed) (map : Map.t) : t =
+  let p =
+    {
+      p with
+      on_ground = on_ground p map;
+      idle = idle kp;
+      dir = dir p kp;
+    }
+  in
+  set_pos p (vel_x kp) (vel_y p kp) map
