@@ -8,8 +8,10 @@ type t = {
 }
 
 and dir =
-  | U
-  | D
+  | RU
+  | LU
+  | LD
+  | RD
   | L
   | R
 
@@ -21,13 +23,14 @@ type key_pressed = {
   c : int;
 }
 
-let v_x = 7
-let gravity = 10
-let jump_force = 10
+let v_x = 6
+let gravity = 2
+let max_fall = 10
+let jump_force = 3
 let dash = 20
 let cap_x = Gamedata.(screen_w - tile_size)
 let cap_y = Gamedata.(screen_h - tile_size)
-let jump_hold_time = 10
+let jump_hold_time = 3
 let local_hold_time = ref 0
 let float = ref false
 let get_x curr = curr.x
@@ -35,18 +38,15 @@ let get_y curr = curr.y
 let init x y = { x; y; dir = R; v_y = 0; idle = true; on_ground = false }
 
 let sprite p num =
-  let index =
-    match (p.idle, p.dir) with
-    | true, U -> 4
-    | true, D -> 5
-    | true, L -> 0
-    | true, R -> 1
-    | false, U -> 4
-    | false, D -> 5
-    | false, L -> 2
-    | false, R -> 3
-  in
-  if num = 0 then index else index + 8
+  match p.dir, p.idle with
+  | RU, _ -> 0
+  | LU, _ -> 1
+  | RD, _ -> 2
+  | LD, _ -> 3
+  | L, true-> 4
+  | L, false-> 5
+  | R, true -> 6
+  | R, false -> 7
 
 let in_solid map x y =
   Map.in_solid map (x / Gamedata.tile_size) (y / Gamedata.tile_size)
@@ -88,9 +88,20 @@ let set_pos p delta_x delta_y map =
 
 let dir p kp =
   match (kp.r - kp.l, kp.u - kp.d) with
-  | 0, 0 -> p.dir
-  | 0, 1 -> U
-  | 0, -1 -> D
+  | 0, 0 -> 
+    if p.dir = RD then R
+    else if p.dir = LD then L
+    else p.dir
+  | 0, 1 ->
+      if p.dir = RU || p.dir = LU then p.dir
+      else if p.dir = R || p.dir = RD then RU
+      else if p.dir = L || p.dir = LD then LU
+      else RU
+  | 0, -1 -> 
+      if p.dir = RD || p.dir = LD then p.dir
+      else if p.dir = R || p.dir = RU then RD
+      else if p.dir = L || p.dir = LU then LD
+      else RD
   | 1, _ -> R
   | -1, _ -> L
   | _ -> failwith "Not possible"
@@ -123,11 +134,7 @@ let vel_y (p : t) (kp : key_pressed) =
 
 let update (p : t) (kp : key_pressed) (map : Map.t) : t =
   let p =
-    {
-      p with
-      on_ground = on_ground p map;
-      idle = idle kp;
-      dir = dir p kp;
-    }
+    { p with on_ground = on_ground p map; idle = idle kp; dir = dir p kp }
   in
-  set_pos p (vel_x kp) (vel_y p kp) map
+  let p = { p with v_y = vel_y p kp |> Util.cap max_fall } in
+  set_pos p (vel_x kp) p.v_y map

@@ -29,7 +29,7 @@ let player_sprites = ref (Array.make 0 None)
 let player_sprite_names =
   List.map
     (fun x -> "player/" ^ x ^ ".bmp")
-    [ "walk-left"; "walk-right"; "left"; "right"; "left-up"; "right-up" ]
+    [ "right-up"; "left-up"; "right-down"; "left-down";  "walk-left"; "left"; "walk-right"; "right" ]
 
 let tiles = ref (Array.make 0 None)
 let regex = Str.regexp "tile[0-9]+.bmp"
