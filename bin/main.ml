@@ -157,6 +157,11 @@ let rec loop render gs =
   let next_draw = Unix.gettimeofday () +. draw_interval in
   let gs_updated = update gs in
   repaint render gs_updated;
+  if gs.map |> Map.get_next = 100 then
+    let thank = Gamedata.make_texture render "background/thanks.bmp" in
+    draw_texture render thank 50 0 (800) (200);
+    Sdl.render_present render;
+    Sdl.pump_events ();
   if next_draw > Unix.gettimeofday () then
     Unix.sleepf (next_draw -. Unix.gettimeofday ())
   else ();
@@ -170,7 +175,7 @@ let intro render =
   let exit = Gamedata.make_texture render "background/exit.bmp" in
   let w,h = Gamedata.screen_w/4, Gamedata.screen_h/4 in
   let f t x y = draw_texture render t x y w h in
-  Unix.sleepf (1.);
+  Unix.sleepf (0.3);
   f get 0 0;
   Sdl.render_present render;
   Sdl.pump_events ();
@@ -223,7 +228,6 @@ let main () =
       eight = -96;
     }
   in
-  intro render;
   let gs =
     match Map.get_spawn m with
     | a, b ->
