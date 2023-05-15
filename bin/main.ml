@@ -142,9 +142,12 @@ let repaint render game_state =
       Sdl.log "Render clear error: %s" e;
       exit 1
   | Ok () ->
-      draw_map render game_state; (* Draw the map first *)
-      draw_player render game_state; (* Draw the player on top of the map *)
-      draw_rain render game_state; (* Draw rain at the end *)
+      draw_map render game_state;
+      (* Draw the map first *)
+      draw_player render game_state;
+      (* Draw the player on top of the map *)
+      draw_rain render game_state;
+      (* Draw rain at the end *)
       Sdl.render_present render;
       Sdl.pump_events ()
 
@@ -152,47 +155,50 @@ let repaint render game_state =
 (* Init + Game Loop + Audio: entry point, game loop, audio setup *)
 (*****************************************************************)
 let draw_interval = 0.016666
+let thanks = ref None
 
 let rec loop render gs =
   let next_draw = Unix.gettimeofday () +. draw_interval in
   let gs_updated = update gs in
   repaint render gs_updated;
   if gs.map |> Map.get_next = 100 then
-    (let thank = Gamedata.make_texture render "background/thanks.bmp" in
-    draw_texture render thank 50 0 (800) (200);
-    Sdl.render_present render;
-    Sdl.pump_events ())
-  else 
-    (if next_draw > Unix.gettimeofday () then
-      Unix.sleepf (next_draw -. Unix.gettimeofday ())
-    else ();
-    if (Sdl.get_keyboard_state ()).{Sdl.Scancode.q} = 1 then ()
-    else loop render gs_updated)
+    match !thanks with
+    | Some x ->
+        draw_texture render x 50 0 800 200;
+        Sdl.render_present render;
+        Sdl.pump_events ()
+    | None -> failwith "Not possible"
+  else ();
+  if next_draw > Unix.gettimeofday () then
+    Unix.sleepf (next_draw -. Unix.gettimeofday ())
+  else ();
+  if (Sdl.get_keyboard_state ()).{Sdl.Scancode.q} = 1 then ()
+  else loop render gs_updated
 
 let intro render =
   let get = Gamedata.make_texture render "background/get.bmp" in
   let to_ = Gamedata.make_texture render "background/to.bmp" in
   let the = Gamedata.make_texture render "background/the.bmp" in
   let exit = Gamedata.make_texture render "background/exit.bmp" in
-  let w,h = Gamedata.screen_w/4, Gamedata.screen_h/4 in
+  let w, h = (Gamedata.screen_w / 4, Gamedata.screen_h / 4) in
   let f t x y = draw_texture render t x y w h in
-  Unix.sleepf (0.3);
+  thanks := Some (Gamedata.make_texture render "background/thanks.bmp");
   f get 0 0;
   Sdl.render_present render;
   Sdl.pump_events ();
-  Unix.sleepf (1.);
+  Unix.sleepf 1.;
   f to_ w 0;
   Sdl.render_present render;
   Sdl.pump_events ();
-  Unix.sleepf (1.);
-  f the (2*w) 0;
+  Unix.sleepf 1.;
+  f the (2 * w) 0;
   Sdl.render_present render;
   Sdl.pump_events ();
-  Unix.sleepf (1.);
-  f exit (3*w) 0;
+  Unix.sleepf 1.;
+  f exit (3 * w) 0;
   Sdl.render_present render;
   Sdl.pump_events ();
-  Unix.sleepf (3.)
+  Unix.sleepf 1.
 
 let main () =
   Sdl.init Sdl.Init.(video + events) |> ignore;
