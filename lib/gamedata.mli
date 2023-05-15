@@ -10,3 +10,4 @@ val player_sprites : Tsdl.Sdl.texture option array ref
 val tiles : Tsdl.Sdl.texture option array ref
 val background: Tsdl.Sdl.texture option ref
 val load_sprites : Tsdl.Sdl.renderer -> unit
+val make_texture : Tsdl.Sdl.renderer -> string -> Tsdl.Sdl.texture

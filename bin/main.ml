@@ -163,6 +163,31 @@ let rec loop render gs =
   if (Sdl.get_keyboard_state ()).{Sdl.Scancode.q} = 1 then ()
   else loop render gs_updated
 
+let intro render =
+  let get = Gamedata.make_texture render "background/get.bmp" in
+  let to_ = Gamedata.make_texture render "background/to.bmp" in
+  let the = Gamedata.make_texture render "background/the.bmp" in
+  let exit = Gamedata.make_texture render "background/exit.bmp" in
+  let w,h = Gamedata.screen_w/4, Gamedata.screen_h/4 in
+  let f t x y = draw_texture render t x y w h in
+  Unix.sleepf (1.);
+  f get 0 0;
+  Sdl.render_present render;
+  Sdl.pump_events ();
+  Unix.sleepf (1.);
+  f to_ w 0;
+  Sdl.render_present render;
+  Sdl.pump_events ();
+  Unix.sleepf (1.);
+  f the (2*w) 0;
+  Sdl.render_present render;
+  Sdl.pump_events ();
+  Unix.sleepf (1.);
+  f exit (3*w) 0;
+  Sdl.render_present render;
+  Sdl.pump_events ();
+  Unix.sleepf (3.)
+
 let main () =
   Sdl.init Sdl.Init.(video + events) |> ignore;
   match Sdl.create_window ~w:screen_w ~h:screen_h name Sdl.Window.opengl with
@@ -182,7 +207,8 @@ let main () =
       Sdl.log "Render clear error: %s" e;
       exit 1
   | Ok _ -> ();
-  Sdl.render_present render;
+  Sdl.set_render_draw_color render 255 255 255 255 |> ignore; 
+  Sdl.render_clear render |> ignore;
   load_sprites render;
   let m = Map.make_map "maps/map1.txt" in
   let rain =
@@ -197,6 +223,7 @@ let main () =
       eight = -96;
     }
   in
+  intro render;
   let gs =
     match Map.get_spawn m with
     | a, b ->

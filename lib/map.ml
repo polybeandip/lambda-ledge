@@ -11,7 +11,7 @@ type t = {
 exception BadMap of string
 
 let format_err = "The map text file is not formatted correctly"
-let firstline_err = "first line of map text should be five ints"
+let firstline_err = "first line of map text should be seven ints"
 
 let parse_map ic =
   let matrix = Array.make_matrix tile_screen_col tile_screen_row 0 in
