@@ -6,6 +6,7 @@ type key_pressed = {
   r : int;
   u : int;
   d : int;
+  x : int;
   c : int
 }
 (** [key_presssed] represents which keys are being presssed *)
