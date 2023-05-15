@@ -149,7 +149,7 @@ let repaint render game_state =
       Sdl.pump_events ()
 
 (*****************************************************************)
-(* Init + Game Loop: the entry point into the game and game loop *)
+(* Init + Game Loop + Audio: entry point, game loop, audio setup *)
 (*****************************************************************)
 let draw_interval = 0.016666
 
@@ -169,48 +169,47 @@ let main () =
   | Error (`Msg e) ->
       Sdl.log "Create window error: %s" e;
       exit 1
-  | Ok w -> (
-      let render =
-        match Sdl.create_renderer w with
-        | Error (`Msg e) ->
-            Sdl.log "Create render error: %s" e;
-            exit 1
-        | Ok r -> r
-      in
-      match Sdl.render_clear render with
-      | Error (`Msg e) ->
-          Sdl.log "Render clear error: %s" e;
-          exit 1
-      | Ok _ ->
-          ();
-          Sdl.render_present render;
-          load_sprites render;
-          let m = Map.make_map "maps/map1.txt" in
-          let rain =
-            {
-              one = 0;
-              two = -100;
-              three = -55;
-              four = -20;
-              five = -150;
-              six = -250;
-              seven = -66;
-              eight = -96;
-            }
-          in
-          let gs =
-            match Map.get_spawn m with
-            | a, b ->
-                {
-                  map = m;
-                  player = Player.init (a * tile_size) (b * tile_size);
-                  flip = 0;
-                  rain;
-                }
-          in
-          loop render gs;
-          Sdl.destroy_window w;
-          Sdl.quit ();
-          exit 0)
+  | Ok w ->
+  let render =
+  match Sdl.create_renderer w with
+    | Error (`Msg e) ->
+        Sdl.log "Create render error: %s" e;
+        exit 1
+    | Ok r -> r
+  in
+  match Sdl.render_clear render with
+  | Error (`Msg e) ->
+      Sdl.log "Render clear error: %s" e;
+      exit 1
+  | Ok _ -> ();
+  Sdl.render_present render;
+  load_sprites render;
+  let m = Map.make_map "maps/map1.txt" in
+  let rain =
+    {
+      one = 0;
+      two = -100;
+      three = -55;
+      four = -20;
+      five = -150;
+      six = -250;
+      seven = -66;
+      eight = -96;
+    }
+  in
+  let gs =
+    match Map.get_spawn m with
+    | a, b ->
+        {
+          map = m;
+          player = Player.init (a * tile_size) (b * tile_size);
+          flip = 0;
+          rain;
+        }
+  in
+  loop render gs;
+  Sdl.destroy_window w;
+  Sdl.quit ();
+  exit 0
 
 let () = main ()

@@ -111,15 +111,30 @@ let check_collision x y map =
   f x1 y1 || f x1 y2 || f x2 y1 || f x2 y2
 
 let on_ground (player : t) map =
-  let x1 = player.x + 10 in
-  let x2 = player.x + Gamedata.tile_size - 10 in
+  let x1, _, x2, _ = hitbox player.x player.y in
   let y = player.y + Gamedata.tile_size + 6 in
   let f = in_solid map in
   if player.y >= wall_y - 6 then player.y >= wall_y else f x1 y || f x2 y
 
 let is_dead (p : t) map =
   let x1, y1, x2, y2 = hitbox p.x p.y in
-  let f = in_spike map in
+  let f a b =
+    if in_spike map a b then (
+      Map.clear_used map;
+      true)
+    else false
+  in
+  f x1 y1 || f x1 y2 || f x2 y1 || f x2 y2
+
+let recharge (p : t) map =
+  let x1, y1, x2, y2 = hitbox p.x p.y in
+  let f a b =
+    let a, b = (a / Gamedata.tile_size, b / Gamedata.tile_size) in
+    if Map.in_battery map a b then (
+      Map.add_used map a b;
+      true)
+    else false
+  in
   f x1 y1 || f x1 y2 || f x2 y1 || f x2 y2
 
 let is_finished (p : t) map =
@@ -221,7 +236,8 @@ let update (p : t) (kp : key_pressed) (map : Map.t) : t =
       on_ground = on_ground p map;
       idle = idle kp;
       dir = dir p kp;
-      can_dash = p.can_dash || (on_ground p map && !local_cool = 0);
+      can_dash =
+        p.can_dash || (on_ground p map && !local_cool = 0) || recharge p map;
     }
   in
   match is_dead p map with

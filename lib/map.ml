@@ -5,6 +5,7 @@ type t = {
   spawn : int * int;
   exit : (int * int) list;
   next : int;
+  mutable used : (int * int) list;
 }
 
 exception BadMap of string
@@ -41,20 +42,28 @@ let make_map data =
         {
           coords = parse_map ic;
           spawn = (spawn_x, spawn_y);
-          exit = [(end_x1, end_y1); (end_x2, end_y2)];
+          exit = [ (end_x1, end_y1); (end_x2, end_y2) ];
           next;
+          used = [];
         }
     | _ -> raise (BadMap firstline_err)
   with
   | BadMap _ -> raise (BadMap firstline_err)
   | _ -> raise (BadMap format_err)
 
-let get_tile m i j = m.coords.(i).(j)
+let get_tile m i j = 
+  let num = m.coords.(i).(j) in
+  if num = 11 && List.exists (fun x -> x = (i,j)) m.used then 0
+  else num
+    
 let get_spawn m = m.spawn
 let get_exit m = m.exit
 let get_next m = m.next
 let get_coords m = m.coords
 let in_solid m x y = get_tile m x y |> Tile.solid
+let in_battery m x y = get_tile m x y |> Tile.recharge
+let add_used m x y = m.used <- (x, y) :: m.used
+let clear_used m = m.used <- []
 
 let in_spike m x y =
   let tile = get_tile m x y in
