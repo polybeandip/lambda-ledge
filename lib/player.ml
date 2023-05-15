@@ -37,16 +37,11 @@ let string_of_dir = function
 let string_of_player p =
   match p with
   | { x; y; v_x; v_y; on_ground; idle; can_dash; dir } ->
-      "{"
-      ^ "x:" ^ string_of_int x ^ ", " 
-      ^ "y:" ^ string_of_int y ^ ", " 
-      ^ "v_x: " ^ string_of_int v_x ^ ", " 
-      ^ "v_y:" ^ string_of_int v_y ^ ", "
-      ^ "on_ground:" ^ string_of_bool on_ground ^ ", " 
-      ^ "idle:" ^ string_of_bool idle ^ ", " 
-      ^ "can_dash: " ^ string_of_bool can_dash ^ ", " 
-      ^ "dir: " ^ string_of_dir dir ^ 
-      "}"
+      "{" ^ "x:" ^ string_of_int x ^ ", " ^ "y:" ^ string_of_int y ^ ", "
+      ^ "v_x: " ^ string_of_int v_x ^ ", " ^ "v_y:" ^ string_of_int v_y ^ ", "
+      ^ "on_ground:" ^ string_of_bool on_ground ^ ", " ^ "idle:"
+      ^ string_of_bool idle ^ ", " ^ "can_dash: " ^ string_of_bool can_dash
+      ^ ", " ^ "dir: " ^ string_of_dir dir ^ "}"
 
 let debug = false
 let v_x = 6
@@ -94,11 +89,24 @@ let sprite p num =
 let in_solid map x y =
   Map.in_solid map (x / Gamedata.tile_size) (y / Gamedata.tile_size)
 
-let check_collision x y map =
+let in_spike map x y =
+  match Map.in_spike map (x / Gamedata.tile_size) (y / Gamedata.tile_size) with
+  | false, _ -> false
+  | true, 7 -> y mod Gamedata.tile_size > 24
+  | true, 8 -> x mod Gamedata.tile_size > 24
+  | true, 9 -> y mod Gamedata.tile_size < 24
+  | true, 10 -> x mod Gamedata.tile_size < 24
+  | _ -> failwith "Not possible"
+
+let hitbox x y =
   let x1 = x + 10 in
   let y1 = y in
   let x2 = x + Gamedata.tile_size - 10 in
   let y2 = y + Gamedata.tile_size - 10 in
+  (x1, y1, x2, y2)
+
+let check_collision x y map =
+  let x1, y1, x2, y2 = hitbox x y in
   let f = in_solid map in
   f x1 y1 || f x1 y2 || f x2 y1 || f x2 y2
 
@@ -108,6 +116,18 @@ let on_ground (player : t) map =
   let y = player.y + Gamedata.tile_size + 6 in
   let f = in_solid map in
   if player.y >= wall_y - 6 then player.y >= wall_y else f x1 y || f x2 y
+
+let is_dead (p : t) map =
+  let x1, y1, x2, y2 = hitbox p.x p.y in
+  let f = in_spike map in
+  f x1 y1 || f x1 y2 || f x2 y1 || f x2 y2
+
+let is_finished (p : t) map =
+  let x1, y1, x2, y2 = hitbox p.x p.y in
+  let f a b =
+    (a / Gamedata.tile_size, b / Gamedata.tile_size) = Map.get_exit map
+  in
+  f x1 y1 || f x1 y2 || f x2 y1 || f x2 y2
 
 let set_pos p map =
   if p.v_y <= 0 && p.v_y > -10 then float := true else ();
@@ -199,17 +219,28 @@ let update (p : t) (kp : key_pressed) (map : Map.t) : t =
       can_dash = p.can_dash || (on_ground p map && !local_cool = 0);
     }
   in
-  if debug then print_endline (string_of_player p) else ();
-  if !local_cool > 0 then local_cool := !local_cool -1 else ();
-  if !local_dash > 0 then (
-    local_dash := !local_dash - 1;
-    set_pos p map)
-  else if kp.x = 1 && p.can_dash then (
-    local_cool := cooldown;
-    local_dash := dash_hold;
-    let v_x, v_y = dash p kp in
-    let p = { p with v_x; v_y; can_dash = false } in
-    set_pos p map)
-  else
-    let p = { p with v_x = vel_x kp; v_y = vel_y p kp |> Util.cap max_fall } in
-    set_pos p map
+  match is_dead p map with
+  | true ->
+      let s_x, s_y =
+        Map.get_spawn map |> fun (x, y) ->
+        (x * Gamedata.tile_size, y * Gamedata.tile_size)
+      in
+      let p = init s_x s_y in
+      set_pos p map
+  | false ->
+      if debug then print_endline (string_of_player p) else ();
+      if !local_cool > 0 then local_cool := !local_cool - 1 else ();
+      if !local_dash > 0 then (
+        local_dash := !local_dash - 1;
+        set_pos p map)
+      else if kp.x = 1 && p.can_dash then (
+        local_cool := cooldown;
+        local_dash := dash_hold;
+        let v_x, v_y = dash p kp in
+        let p = { p with v_x; v_y; can_dash = false } in
+        set_pos p map)
+      else
+        let p =
+          { p with v_x = vel_x kp; v_y = vel_y p kp |> Util.cap max_fall }
+        in
+        set_pos p map

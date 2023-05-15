@@ -4,12 +4,13 @@ type t = {
   coords : int Array.t Array.t;
   spawn : int * int;
   exit : int * int;
+  next : int;
 }
 
 exception BadMap of string
 
 let format_err = "The map text file is not formatted correctly"
-let firstline_err = "first line of map text should be four ints"
+let firstline_err = "first line of map text should be five ints"
 
 let parse_map ic =
   let matrix = Array.make_matrix tile_screen_col tile_screen_row 0 in
@@ -36,11 +37,12 @@ let make_map data =
     let ic = open_in data in
     let line = input_line ic in
     match List.map int_of_string (String.split_on_char ' ' line) with
-    | [ spawn_x; spawn_y; end_x; end_y ] ->
+    | [ spawn_x; spawn_y; end_x; end_y; next ] ->
         {
           coords = parse_map ic;
           spawn = (spawn_x, spawn_y);
           exit = (end_x, end_y);
+          next;
         }
     | _ -> raise (BadMap firstline_err)
   with
@@ -50,4 +52,9 @@ let make_map data =
 let get_tile m i j = m.coords.(i).(j)
 let get_spawn m = m.spawn
 let get_exit m = m.exit
+let get_next m = m.next
 let in_solid m x y = get_tile m x y |> Tile.solid
+
+let in_spike m x y =
+  let tile = get_tile m x y in
+  if tile |> Tile.spike then (true, tile) else (false, -1)

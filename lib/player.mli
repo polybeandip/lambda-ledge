@@ -20,6 +20,8 @@ val get_x : t -> int
 val get_y : t -> int
 (** [get_y p] is the current the y coordinate of player [p]*)
 
+val is_finished: t -> Map.t -> bool
+
 val update : t -> key_pressed -> Map.t -> t
 (** [update p] updates the player's state according to which keys are pressed *)
 
