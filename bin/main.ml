@@ -1,8 +1,8 @@
 open Tsdl
-open Bullet
+open Lambdaledge
 open Gamedata
 
-let name = "game name" (* fix this later*)
+let name = "Lambda Ledge" (* fix this later*)
 
 type rain = {
   one : int;

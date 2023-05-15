@@ -1,5 +1,6 @@
-open Bullet.Map
-open Bullet.Player
+open Lambdaledge
+open Map
+open Player
 open OUnit2
 
 let init_test (name : string) (input_x : int) (input_y : int) expected_output :
@@ -16,11 +17,11 @@ let idle_test (name : string) (input : key_pressed) (expected_output : bool) :
     test =
   name >:: fun _ -> assert_equal expected_output (idle input)
 
-let sprite_test (name : string) (input : Bullet.Player.t)
+let sprite_test (name : string) (input : Player.t)
     (expected_output : int) : test =
   name >:: fun _ -> assert_equal expected_output (sprite input)
 
-let dir_test (name : string) (input_p : Bullet.Player.t)
+let dir_test (name : string) (input_p : Player.t)
     (input_kp : key_pressed) (expected_output : dir) : test =
   name >:: fun _ -> assert_equal expected_output (dir input_p input_kp)
 
@@ -1228,7 +1229,7 @@ let player_tests =
      dir_test "Dir 3" inp_p inp_kp ans);
   ]
 
-let map_tests =
+let _map_tests =
   [
     map_from_data_test "map" "maps/map.txt"
       [|
