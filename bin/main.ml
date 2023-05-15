@@ -158,15 +158,16 @@ let rec loop render gs =
   let gs_updated = update gs in
   repaint render gs_updated;
   if gs.map |> Map.get_next = 100 then
-    let thank = Gamedata.make_texture render "background/thanks.bmp" in
+    (let thank = Gamedata.make_texture render "background/thanks.bmp" in
     draw_texture render thank 50 0 (800) (200);
     Sdl.render_present render;
-    Sdl.pump_events ();
-  if next_draw > Unix.gettimeofday () then
-    Unix.sleepf (next_draw -. Unix.gettimeofday ())
-  else ();
-  if (Sdl.get_keyboard_state ()).{Sdl.Scancode.q} = 1 then ()
-  else loop render gs_updated
+    Sdl.pump_events ())
+  else 
+    (if next_draw > Unix.gettimeofday () then
+      Unix.sleepf (next_draw -. Unix.gettimeofday ())
+    else ();
+    if (Sdl.get_keyboard_state ()).{Sdl.Scancode.q} = 1 then ()
+    else loop render gs_updated)
 
 let intro render =
   let get = Gamedata.make_texture render "background/get.bmp" in
@@ -228,6 +229,7 @@ let main () =
       eight = -96;
     }
   in
+  intro render;
   let gs =
     match Map.get_spawn m with
     | a, b ->
