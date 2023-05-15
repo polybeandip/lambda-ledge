@@ -3,7 +3,7 @@ open Gamedata
 type t = {
   coords : int Array.t Array.t;
   spawn : int * int;
-  exit : int * int;
+  exit : (int * int) list;
   next : int;
 }
 
@@ -37,11 +37,11 @@ let make_map data =
     let ic = open_in data in
     let line = input_line ic in
     match List.map int_of_string (String.split_on_char ' ' line) with
-    | [ spawn_x; spawn_y; end_x; end_y; next ] ->
+    | [ spawn_x; spawn_y; end_x1; end_y1; end_x2; end_y2; next ] ->
         {
           coords = parse_map ic;
           spawn = (spawn_x, spawn_y);
-          exit = (end_x, end_y);
+          exit = [(end_x1, end_y1); (end_x2, end_y2)];
           next;
         }
     | _ -> raise (BadMap firstline_err)

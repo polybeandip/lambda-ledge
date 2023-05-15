@@ -124,8 +124,12 @@ let is_dead (p : t) map =
 
 let is_finished (p : t) map =
   let x1, y1, x2, y2 = hitbox p.x p.y in
-  let f a b =
-    (a / Gamedata.tile_size, b / Gamedata.tile_size) = Map.get_exit map
+  let f a b = 
+    let rec f_aux = function
+      | h :: t -> (a / Gamedata.tile_size, b / Gamedata.tile_size) = h
+      | [] -> false
+    in 
+    f_aux (Map.get_exit map)
   in
   f x1 y1 || f x1 y2 || f x2 y1 || f x2 y2
 
