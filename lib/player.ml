@@ -73,7 +73,7 @@ let init x y =
     can_dash = true;
   }
 
-let sprite p num =
+let sprite p =
   match (p.dir, p.idle, not p.can_dash) with
   | RU, _, false -> 0
   | LU, _, false -> 1
@@ -124,11 +124,12 @@ let is_dead (p : t) map =
 
 let is_finished (p : t) map =
   let x1, y1, x2, y2 = hitbox p.x p.y in
-  let f a b = 
+  let f a b =
     let rec f_aux = function
-      | h :: t -> (a / Gamedata.tile_size, b / Gamedata.tile_size) = h
+      | h :: t ->
+          (a / Gamedata.tile_size, b / Gamedata.tile_size) = h || f_aux t
       | [] -> false
-    in 
+    in
     f_aux (Map.get_exit map)
   in
   f x1 y1 || f x1 y2 || f x2 y1 || f x2 y2

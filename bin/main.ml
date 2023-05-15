@@ -109,101 +109,10 @@ let draw_player render game_state =
   let p = game_state.player in
   let x, y = (Player.get_x p, Player.get_y p) in
   draw_texture render
-    (Util.unpack_get !player_sprites (Player.sprite p 0))
+    (Util.unpack_get !player_sprites (Player.sprite p))
     x y tile_size tile_size
 
-let draw_rain1 render x y w h =
-  match Sdl.set_render_draw_color render 65 75 255 108 with
-  | Error (`Msg e) ->
-      Sdl.log "Set render draw color error: %s" e;
-      exit 1
-  | Ok () -> (
-      let rect = Some (Sdl.Rect.create ~x ~y ~w ~h) in
-      match Sdl.render_fill_rect render rect with
-      | Error (`Msg e) ->
-          Sdl.log "Render fill rect error: %s" e;
-          exit 1
-      | Ok () -> ())
-
-let draw_rain2 render x y w h =
-  match Sdl.set_render_draw_color render 55 65 255 108 with
-  | Error (`Msg e) ->
-      Sdl.log "Set render draw color error: %s" e;
-      exit 1
-  | Ok () -> (
-      let rect = Some (Sdl.Rect.create ~x ~y ~w ~h) in
-      match Sdl.render_fill_rect render rect with
-      | Error (`Msg e) ->
-          Sdl.log "Render fill rect error: %s" e;
-          exit 1
-      | Ok () -> ())
-
-let draw_rain3 render x y w h =
-  match Sdl.set_render_draw_color render 45 55 255 108 with
-  | Error (`Msg e) ->
-      Sdl.log "Set render draw color error: %s" e;
-      exit 1
-  | Ok () -> (
-      let rect = Some (Sdl.Rect.create ~x ~y ~w ~h) in
-      match Sdl.render_fill_rect render rect with
-      | Error (`Msg e) ->
-          Sdl.log "Render fill rect error: %s" e;
-          exit 1
-      | Ok () -> ())
-
-let draw_rain4 render x y w h =
-  match Sdl.set_render_draw_color render 66 75 255 108 with
-  | Error (`Msg e) ->
-      Sdl.log "Set render draw color error: %s" e;
-      exit 1
-  | Ok () -> (
-      let rect = Some (Sdl.Rect.create ~x ~y ~w ~h) in
-      match Sdl.render_fill_rect render rect with
-      | Error (`Msg e) ->
-          Sdl.log "Render fill rect error: %s" e;
-          exit 1
-      | Ok () -> ())
-
-let draw_rain5 render x y w h =
-  match Sdl.set_render_draw_color render 66 75 255 108 with
-  | Error (`Msg e) ->
-      Sdl.log "Set render draw color error: %s" e;
-      exit 1
-  | Ok () -> (
-      let rect = Some (Sdl.Rect.create ~x ~y ~w ~h) in
-      match Sdl.render_fill_rect render rect with
-      | Error (`Msg e) ->
-          Sdl.log "Render fill rect error: %s" e;
-          exit 1
-      | Ok () -> ())
-
-let draw_rain6 render x y w h =
-  match Sdl.set_render_draw_color render 66 75 255 108 with
-  | Error (`Msg e) ->
-      Sdl.log "Set render draw color error: %s" e;
-      exit 1
-  | Ok () -> (
-      let rect = Some (Sdl.Rect.create ~x ~y ~w ~h) in
-      match Sdl.render_fill_rect render rect with
-      | Error (`Msg e) ->
-          Sdl.log "Render fill rect error: %s" e;
-          exit 1
-      | Ok () -> ())
-
-let draw_rain7 render x y w h =
-  match Sdl.set_render_draw_color render 66 75 255 108 with
-  | Error (`Msg e) ->
-      Sdl.log "Set render draw color error: %s" e;
-      exit 1
-  | Ok () -> (
-      let rect = Some (Sdl.Rect.create ~x ~y ~w ~h) in
-      match Sdl.render_fill_rect render rect with
-      | Error (`Msg e) ->
-          Sdl.log "Render fill rect error: %s" e;
-          exit 1
-      | Ok () -> ())
-
-let draw_rain8 render x y w h =
+let draw_rain_drop render x y w h =
   match Sdl.set_render_draw_color render 66 75 255 108 with
   | Error (`Msg e) ->
       Sdl.log "Set render draw color error: %s" e;
@@ -217,14 +126,14 @@ let draw_rain8 render x y w h =
       | Ok () -> ())
 
 let draw_rain render game_state =
-  draw_rain1 render 280 game_state.rain.one 6 50;
-  draw_rain2 render 150 game_state.rain.two 6 40;
-  draw_rain3 render 410 game_state.rain.three 6 55;
-  draw_rain4 render 540 game_state.rain.four 6 55;
-  draw_rain5 render 30 game_state.rain.four 6 55;
-  draw_rain6 render 670 game_state.rain.six 6 55;
-  draw_rain7 render 800 game_state.rain.seven 6 55;
-  draw_rain8 render 925 game_state.rain.eight 6 55
+  draw_rain_drop render 280 game_state.rain.one 6 50;
+  draw_rain_drop render 150 game_state.rain.two 6 40;
+  draw_rain_drop render 410 game_state.rain.three 6 55;
+  draw_rain_drop render 540 game_state.rain.four 6 55;
+  draw_rain_drop render 30 game_state.rain.four 6 55;
+  draw_rain_drop render 670 game_state.rain.six 6 55;
+  draw_rain_drop render 800 game_state.rain.seven 6 55;
+  draw_rain_drop render 925 game_state.rain.eight 6 55
 
 let repaint render game_state =
   Sdl.set_render_draw_blend_mode render Sdl.Blend.mode_blend |> ignore;
@@ -233,11 +142,9 @@ let repaint render game_state =
       Sdl.log "Render clear error: %s" e;
       exit 1
   | Ok () ->
-      draw_map render game_state;
-      (* Draw the map first *)
-      draw_player render game_state;
-      (* Draw the player on top of the map *)
-      draw_rain render game_state;
+      draw_map render game_state; (* Draw the map first *)
+      draw_player render game_state; (* Draw the player on top of the map *)
+      draw_rain render game_state; (* Draw rain at the end *)
       Sdl.render_present render;
       Sdl.pump_events ()
 

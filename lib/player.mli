@@ -1,4 +1,21 @@
-type t
+type t = {
+  x : int;
+  y : int;
+  v_y : int;
+  v_x : int;
+  on_ground : bool;
+  idle : bool;
+  can_dash : bool;
+  dir : dir;
+}
+
+and dir =
+  | RU
+  | LU
+  | LD
+  | RD
+  | L
+  | R
 (** [t] is the type of the player character *)
 
 type key_pressed = {
@@ -25,5 +42,9 @@ val is_finished: t -> Map.t -> bool
 val update : t -> key_pressed -> Map.t -> t
 (** [update p] updates the player's state according to which keys are pressed *)
 
-val sprite : t -> int -> int
+val idle : key_pressed -> bool
+
+val dir : t -> key_pressed -> dir
+
+val sprite : t -> int
 (** [sprite p] is the index in [sprite_set] to render of player [p]*)

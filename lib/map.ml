@@ -53,6 +53,7 @@ let get_tile m i j = m.coords.(i).(j)
 let get_spawn m = m.spawn
 let get_exit m = m.exit
 let get_next m = m.next
+let get_coords m = m.coords
 let in_solid m x y = get_tile m x y |> Tile.solid
 
 let in_spike m x y =
