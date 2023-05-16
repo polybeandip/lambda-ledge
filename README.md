@@ -1,3 +1,4 @@
 # Lambda Ledge
-Group Members: Akash Dhiraj (ad739), Max Ma (mm2559), Krishiv Shah (kjs294)
+← → ↑ ↓ are for moving left, right, up, and down respectively.
+<kbd>c</kbd> is to jump and <kbd>x</kbd> is to dash.
 

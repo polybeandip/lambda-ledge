@@ -11,3 +11,6 @@ lines:
 
 doc:
 	dune build @doc
+
+zip:
+	zip -r lambda.zip . 

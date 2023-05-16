@@ -16,7 +16,8 @@ and dir =
   | LD
   | RD
   | L
-  | R  (** [dir] is the type of the direction of the player character *)
+  | R  
+(** [dir] is the type of the direction of the player character *)
 
 type key_pressed = {
   l : int;
