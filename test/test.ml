@@ -1,3 +1,34 @@
+(**TEST PLAN:
+
+   Components tested manually: GUI features, graphic functionality, music,
+   helper functions, map-making from user input
+
+   Components tested with Test Suite:
+
+   -Player.ml
+
+   init_test was used to test whether the player spawns at the intended map
+   location Blackbox and glass box tests were used to place the player in valid
+   as well as invalid locations breaking map bounds in all dimensions
+
+   sprite_test was used to determine the int output given a player with varying
+   idle, can_dash and dir attributes Blackbox tests were used along with
+   randomized tests which varied the values of irrelevant variables to ensure
+   that function only considered relevant attributes
+
+   dir_test was used to determine the int output given a player with varying
+   key_press attributes Blackbox tests were used along with randomized tests
+   which varied the values of the keypress to ensure that function only
+   considered relevant attributes as well as test the various key press
+   combinations Glass box tests were used to ensure all possible key-presses
+   were tested
+
+   -Map.ml map_from_data_test was used to determine the int Array.t Array.t
+   output given a txt file with different map strings Blackbox tests were used
+   along with randomized tests which varied the values of the array contents to
+   ensure that maps with varous tiles functioned correctly Glass box tests were
+   used to ensure all possible tile-types were tested *)
+
 open Lambdaledge
 open Map
 open Player
@@ -17,12 +48,12 @@ let idle_test (name : string) (input : key_pressed) (expected_output : bool) :
     test =
   name >:: fun _ -> assert_equal expected_output (idle input)
 
-let sprite_test (name : string) (input : Player.t)
-    (expected_output : int) : test =
+let sprite_test (name : string) (input : Player.t) (expected_output : int) :
+    test =
   name >:: fun _ -> assert_equal expected_output (sprite input)
 
-let dir_test (name : string) (input_p : Player.t)
-    (input_kp : key_pressed) (expected_output : dir) : test =
+let dir_test (name : string) (input_p : Player.t) (input_kp : key_pressed)
+    (expected_output : dir) : test =
   name >:: fun _ -> assert_equal expected_output (dir input_p input_kp)
 
 let player_tests =
