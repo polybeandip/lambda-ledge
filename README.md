@@ -1,4 +1,4 @@
 # Lambda Ledge
-← → ↑ ↓ are for moving left, right, up, and down respectively.
+Arrows ← → ↑ ↓ are for moving left, right, up, and down respectively.
 <kbd>c</kbd> is to jump and <kbd>x</kbd> is to dash.
 
