@@ -1,23 +1,5 @@
-type t = {
-  x : int;
-  y : int;
-  v_y : int;
-  v_x : int;
-  on_ground : bool;
-  idle : bool;
-  can_dash : bool;
-  dir : dir;
-}
+type t
 (** [t] is the type of the player character *)
-
-and dir =
-  | RU
-  | LU
-  | LD
-  | RD
-  | L
-  | R  
-(** [dir] is the type of the direction of the player character *)
 
 type key_pressed = {
   l : int;
@@ -33,21 +15,16 @@ val init : int -> int -> t
 (** [init x y] spawns a player charater at (x,y) *)
 
 val get_x : t -> int
-(** [get_x p] is the current the x coordinate of player [p]*)
+(** [get_x p] is the current the x coordinate of player [p] *)
 
 val get_y : t -> int
-(** [get_y p] is the current the y coordinate of player [p]*)
+(** [get_y p] is the current the y coordinate of player [p] *)
 
 val is_finished : t -> Map.t -> bool
+(** [is_finished p map] is true if and only if [p] is on an exit *)
 
 val update : t -> key_pressed -> Map.t -> t
 (** [update p] updates the player's state according to which keys are pressed *)
-
-val idle : key_pressed -> bool
-(** [idle kp] is true is the player is idle given the key presses [kp]*)
-
-val dir : t -> key_pressed -> dir
-(** [dir p kp] is the direction the player [p] is facing given key presses [p] *)
 
 val sprite : t -> int
 (** [sprite p] is the index in [sprite_set] to render of player [p]*)

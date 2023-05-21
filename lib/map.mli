@@ -18,10 +18,6 @@ val get_exit : t -> (int * int) list
 val get_next : t -> int
 (** [get_next map] is the map the player moves to after passing through an exit *)
 
-val get_coords : t -> int array array
-(** [get_coords map] is an integer matrix where entry (x,y) is the tile at
-    coordinates (x,y) *)
-
 val in_solid : t -> int -> int -> bool
 (** [in_solid map x,y] is true if the tile at (x,y) is solid and false otherwise *)
 

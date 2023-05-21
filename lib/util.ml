@@ -5,5 +5,5 @@ let unpack_get array i =
   | None -> raise (Failure "weird_get failed")
 
 (**[cap max v] is [max] if [v] is >= [max], [-max] if [v] <= [-max], and [v]
-   otherwise*)
+   otherwise *)
 let cap max v = if v >= max then max else if v <= -max then -max else v

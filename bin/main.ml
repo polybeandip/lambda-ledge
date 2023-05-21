@@ -2,7 +2,7 @@ open Tsdl
 open Lambdaledge
 open Gamedata
 
-let name = "Lambda Ledge" (* fix this later*)
+let name = "Lambda Ledge" 
 
 type rain = {
   one : int;
@@ -14,19 +14,18 @@ type rain = {
   seven : int;
   eight : int;
 }
+(** [rain] represents the y-coordinates of the rain sprites*)
 
 type game_state = {
   map : Map.t;
   player : Player.t;
-  flip : int;
   rain : rain;
 }
 (** [game_state] represents the current state of the game*)
 
 (*****************************************************************)
-(* UPDATE: functions for updating game_state *)
+(* UPDATE: functions for updating game state *)
 (*****************************************************************)
-
 let rain_fall = function
   | { one; two; three; four; five; six; seven; eight } ->
       {
@@ -58,7 +57,6 @@ let update game_state =
       {
         game_state with
         player;
-        flip = 1 - game_state.flip;
         rain = rain_fall game_state.rain;
       }
   | true -> (
@@ -71,12 +69,11 @@ let update game_state =
           {
             map;
             player = Player.init (a * tile_size) (b * tile_size);
-            flip = 1 - game_state.flip;
             rain = rain_fall game_state.rain;
           })
 
 (*****************************************************************)
-(* DRAW: functions for drawing data onto screen *)
+(* DRAW: functions for drawing data onto the screen *)
 (*****************************************************************)
 let draw_texture render texture x y w h =
   match Sdl.render_copy ~dst:(Sdl.Rect.create ~w ~h ~x ~y) render texture with
@@ -152,7 +149,7 @@ let repaint render game_state =
       Sdl.pump_events ()
 
 (*****************************************************************)
-(* Init + Game Loop + Audio: entry point, game loop, audio setup *)
+(* Init + Game Loop : entry point, game loop *)
 (*****************************************************************)
 let draw_interval = 0.016666
 let thanks = ref None
@@ -242,7 +239,6 @@ let main () =
         {
           map = m;
           player = Player.init (a * tile_size) (b * tile_size);
-          flip = 0;
           rain;
         }
   in
