@@ -59,7 +59,6 @@ let get_tile m i j =
 let get_spawn m = m.spawn
 let get_exit m = m.exit
 let get_next m = m.next
-let get_coords m = m.coords
 let in_solid m x y = get_tile m x y |> Tile.solid
 let in_battery m x y = get_tile m x y |> Tile.recharge
 let add_used m x y = m.used <- (x, y) :: m.used

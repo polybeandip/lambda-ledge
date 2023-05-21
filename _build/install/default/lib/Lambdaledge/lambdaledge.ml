@@ -1,0 +1,1 @@
+../../../../default/lib/lambdaledge.ml-gen

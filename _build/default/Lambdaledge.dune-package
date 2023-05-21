@@ -1,0 +1,88 @@
+(lang dune 3.7)
+(name Lambdaledge)
+(sections (lib .) (libexec .) (doc ../../doc/Lambdaledge))
+(files
+ (lib
+  (META
+   dune-package
+   gamedata.ml
+   gamedata.mli
+   lambdaledge.a
+   lambdaledge.cma
+   lambdaledge.cmi
+   lambdaledge.cmt
+   lambdaledge.cmx
+   lambdaledge.cmxa
+   lambdaledge.ml
+   lambdaledge__Gamedata.cmi
+   lambdaledge__Gamedata.cmt
+   lambdaledge__Gamedata.cmti
+   lambdaledge__Gamedata.cmx
+   lambdaledge__Map.cmi
+   lambdaledge__Map.cmt
+   lambdaledge__Map.cmti
+   lambdaledge__Map.cmx
+   lambdaledge__Player.cmi
+   lambdaledge__Player.cmt
+   lambdaledge__Player.cmti
+   lambdaledge__Player.cmx
+   lambdaledge__Tile.cmi
+   lambdaledge__Tile.cmt
+   lambdaledge__Tile.cmti
+   lambdaledge__Tile.cmx
+   lambdaledge__Util.cmi
+   lambdaledge__Util.cmt
+   lambdaledge__Util.cmx
+   map.ml
+   map.mli
+   opam
+   player.ml
+   player.mli
+   tile.ml
+   tile.mli
+   util.ml))
+ (libexec (lambdaledge.cmxs))
+ (doc (README.md)))
+(library
+ (name Lambdaledge)
+ (kind normal)
+ (archives (byte lambdaledge.cma) (native lambdaledge.cmxa))
+ (plugins (byte lambdaledge.cma) (native lambdaledge.cmxs))
+ (native_archives lambdaledge.a)
+ (requires str tsdl)
+ (main_module_name Lambdaledge)
+ (modes byte native)
+ (modules
+  (wrapped
+   (group
+    (alias
+     (obj_name lambdaledge)
+     (visibility public)
+     (kind alias)
+     (source (path Lambdaledge) (impl (path lambdaledge.ml-gen))))
+    (name Lambdaledge)
+    (modules
+     (module
+      (obj_name lambdaledge__Gamedata)
+      (visibility public)
+      (source
+       (path Gamedata)
+       (intf (path gamedata.mli))
+       (impl (path gamedata.ml))))
+     (module
+      (obj_name lambdaledge__Map)
+      (visibility public)
+      (source (path Map) (intf (path map.mli)) (impl (path map.ml))))
+     (module
+      (obj_name lambdaledge__Player)
+      (visibility public)
+      (source (path Player) (intf (path player.mli)) (impl (path player.ml))))
+     (module
+      (obj_name lambdaledge__Tile)
+      (visibility public)
+      (source (path Tile) (intf (path tile.mli)) (impl (path tile.ml))))
+     (module
+      (obj_name lambdaledge__Util)
+      (visibility public)
+      (source (path Util) (impl (path util.ml))))))
+   (wrapped true))))

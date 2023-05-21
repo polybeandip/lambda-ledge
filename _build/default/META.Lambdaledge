@@ -1,0 +1,6 @@
+description = ""
+requires = "str tsdl"
+archive(byte) = "lambdaledge.cma"
+archive(native) = "lambdaledge.cmxa"
+plugin(byte) = "lambdaledge.cma"
+plugin(native) = "lambdaledge.cmxs"
