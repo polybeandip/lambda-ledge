@@ -2,6 +2,7 @@
 
 start:
 	./_build/default/bin/main.exe	
+
 play:
 	dune exec bin/main.exe
 
