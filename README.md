@@ -1,8 +1,27 @@
 # Lambda Ledge
 
-After cloning the repository, run `make start` to start the game. Goodluck and have fun!
+Lambda Ledge is a simple 2D-platformer, where the goal is simple: **get to the exit**
+
+## Screenshots
+
+<img src="screenshots/lvl1.png" width="500" height="" />
+&nbsp &nbsp
+<img src="screenshots/lvl2.png" width="500" height="" />
+
+## Installation 
+Clone the repository and `cd` into it. Run `make start` to begin playing. 
 
 ## Controls
-← → ↑ ↓ are for moving left, right, up, and down respectively.
-<kbd>c</kbd> is to jump and <kbd>x</kbd> is to dash.
 
+<center>
+
+| Gameplay   | Keys           |
+|------------|----------------|
+| Move Left  |  ←             |
+| Move Right |  ←             |
+| Move Up    |  ↑             |
+| Move Down  |  ↓             |
+| Jump       | <kbd>c</kbd>   |
+| Dash       | <kbd>x</kbd>   |
+
+</center>
