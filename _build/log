@@ -1,9 +1,9 @@
-# dune exec bin/main.exe
+# dune build
 # OCAMLPARAM: unset
 # Shared cache: disabled
 # Workspace root: /home/akash/lambda-ledge
 # Auto-detected concurrency: 12
-$ /home/akash/.opam/cs3110-2023sp/bin/ocamlc.opt -config > /tmp/dune_3281b8_output
+$ /home/akash/.opam/cs3110-2023sp/bin/ocamlc.opt -config > /tmp/dune_9357b8_output
 # Dune context:
 #  { name = "default"
 #  ; kind = "default"
@@ -111,3 +111,10 @@ $ /home/akash/.opam/cs3110-2023sp/bin/ocamlc.opt -config > /tmp/dune_3281b8_outp
 #      ; windows_unicode = false
 #      }
 #  }
+$ (cd _build/default && /home/akash/.opam/cs3110-2023sp/bin/ocamldep.opt -modules -impl lib/map.ml) > _build/default/lib/.lambdaledge.objs/lambdaledge__Map.impl.d
+$ (cd _build/default && /home/akash/.opam/cs3110-2023sp/bin/ocamlc.opt -w @1..3@5..28@30..39@43@46..47@49..57@61..62@67@69-40 -strict-sequence -strict-formats -short-paths -keep-locs -g -bin-annot -I lib/.lambdaledge.objs/byte -I /home/akash/.opam/cs3110-2023sp/lib/bigarray-compat -I /home/akash/.opam/cs3110-2023sp/lib/ctypes -I /home/akash/.opam/cs3110-2023sp/lib/integers -I /home/akash/.opam/cs3110-2023sp/lib/ocaml/threads -I /home/akash/.opam/cs3110-2023sp/lib/stdlib-shims -I /home/akash/.opam/cs3110-2023sp/lib/tsdl -intf-suffix .ml -no-alias-deps -opaque -open Lambdaledge -o lib/.lambdaledge.objs/byte/lambdaledge__Map.cmo -c -impl lib/map.ml)
+$ (cd _build/default && /home/akash/.opam/cs3110-2023sp/bin/ocamlc.opt -w @1..3@5..28@30..39@43@46..47@49..57@61..62@67@69-40 -strict-sequence -strict-formats -short-paths -keep-locs -g -a -o lib/lambdaledge.cma lib/.lambdaledge.objs/byte/lambdaledge.cmo lib/.lambdaledge.objs/byte/lambdaledge__Util.cmo lib/.lambdaledge.objs/byte/lambdaledge__Tile.cmo lib/.lambdaledge.objs/byte/lambdaledge__Gamedata.cmo lib/.lambdaledge.objs/byte/lambdaledge__Map.cmo lib/.lambdaledge.objs/byte/lambdaledge__Player.cmo)
+$ (cd _build/default && /home/akash/.opam/cs3110-2023sp/bin/ocamlopt.opt -w @1..3@5..28@30..39@43@46..47@49..57@61..62@67@69-40 -strict-sequence -strict-formats -short-paths -keep-locs -g -I lib/.lambdaledge.objs/byte -I lib/.lambdaledge.objs/native -I /home/akash/.opam/cs3110-2023sp/lib/bigarray-compat -I /home/akash/.opam/cs3110-2023sp/lib/ctypes -I /home/akash/.opam/cs3110-2023sp/lib/integers -I /home/akash/.opam/cs3110-2023sp/lib/ocaml/threads -I /home/akash/.opam/cs3110-2023sp/lib/stdlib-shims -I /home/akash/.opam/cs3110-2023sp/lib/tsdl -intf-suffix .ml -no-alias-deps -opaque -open Lambdaledge -o lib/.lambdaledge.objs/native/lambdaledge__Map.cmx -c -impl lib/map.ml)
+$ (cd _build/default && /home/akash/.opam/cs3110-2023sp/bin/ocamlopt.opt -w @1..3@5..28@30..39@43@46..47@49..57@61..62@67@69-40 -strict-sequence -strict-formats -short-paths -keep-locs -g -a -o lib/lambdaledge.cmxa lib/.lambdaledge.objs/native/lambdaledge.cmx lib/.lambdaledge.objs/native/lambdaledge__Util.cmx lib/.lambdaledge.objs/native/lambdaledge__Tile.cmx lib/.lambdaledge.objs/native/lambdaledge__Gamedata.cmx lib/.lambdaledge.objs/native/lambdaledge__Map.cmx lib/.lambdaledge.objs/native/lambdaledge__Player.cmx)
+$ (cd _build/default && /home/akash/.opam/cs3110-2023sp/bin/ocamlopt.opt -w @1..3@5..28@30..39@43@46..47@49..57@61..62@67@69-40 -strict-sequence -strict-formats -short-paths -keep-locs -g -shared -linkall -I lib -o lib/lambdaledge.cmxs lib/lambdaledge.cmxa)
+$ (cd _build/default && /home/akash/.opam/cs3110-2023sp/bin/ocamlopt.opt -w @1..3@5..28@30..39@43@46..47@49..57@61..62@67@69-40 -strict-sequence -strict-formats -short-paths -keep-locs -g -o bin/main.exe /home/akash/.opam/cs3110-2023sp/lib/ocaml/str.cmxa -I /home/akash/.opam/cs3110-2023sp/lib/ocaml /home/akash/.opam/cs3110-2023sp/lib/bigarray-compat/bigarray_compat.cmxa -I /home/akash/.opam/cs3110-2023sp/lib/ocaml /home/akash/.opam/cs3110-2023sp/lib/stdlib-shims/stdlib_shims.cmxa /home/akash/.opam/cs3110-2023sp/lib/integers/integers.cmxa -I /home/akash/.opam/cs3110-2023sp/lib/integers /home/akash/.opam/cs3110-2023sp/lib/ctypes/ctypes.cmxa -I /home/akash/.opam/cs3110-2023sp/lib/ctypes /home/akash/.opam/cs3110-2023sp/lib/ocaml/unix.cmxa -I /home/akash/.opam/cs3110-2023sp/lib/ocaml /home/akash/.opam/cs3110-2023sp/lib/ocaml/threads/threads.cmxa -I /home/akash/.opam/cs3110-2023sp/lib/ocaml /home/akash/.opam/cs3110-2023sp/lib/ctypes/ctypes-foreign.cmxa -I /home/akash/.opam/cs3110-2023sp/lib/ctypes /home/akash/.opam/cs3110-2023sp/lib/tsdl/tsdl.cmxa -I /home/akash/.opam/cs3110-2023sp/lib/tsdl lib/lambdaledge.cmxa bin/.main.eobjs/native/dune__exe__Main.cmx)
