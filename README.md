@@ -23,5 +23,6 @@ Clone the repository and `cd` into it. Run `make start` to begin playing.
 | Move Down  |  ↓             |
 | Jump       | <kbd>c</kbd>   |
 | Dash       | <kbd>x</kbd>   |
+| Quit       | <kbd>q</kbd>   |
 
 </center>
