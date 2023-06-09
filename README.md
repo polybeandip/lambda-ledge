@@ -1,6 +1,6 @@
 # Lambda Ledge
 
-Lambda Ledge is a simple 2D-platformer with a simple goal: **get to the exit**
+Lambda Ledge is a 2D-platformer, where the player's goal is simple: **get to the exit**
 
 ## Screenshots
 
