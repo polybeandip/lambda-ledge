@@ -5,7 +5,7 @@ Lambda Ledge is a 2D-platformer, where the player's goal is simple: **get to the
 ## Screenshots
 
 <img src="screenshots/lvl1.png" width="500" height="" />
-&nbsp &nbsp
+&nbsp
 <img src="screenshots/lvl2.png" width="500" height="" />
 
 ## Installation 
