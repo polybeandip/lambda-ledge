@@ -1,9 +1,7 @@
-.PHONY: test
-
 start:
 	./_build/default/bin/main.exe	
 
-play:
+recompile:
 	dune exec bin/main.exe
 
 lines:
