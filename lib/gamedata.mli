@@ -29,17 +29,17 @@ val player_sprites : Tsdl.Sdl.texture option array ref
     Why an array of texture options instead of an array of textures you ask?
     There isn't a good answer, and quite frankly, this is mostly a hack having
     to do with SDL architecture. If we used an array of textures, then, in order
-    to initalize [player_sprites], we'd need to already have an array to
-    textures pass into the [ref] function. However, values of type texture can
-    only be made using values of type Tsdl.Sdl.window, and the first time we
-    build a window is inside main.ml, which is outside the scope of module
-    Gamedata. Using texture options gives a quick and dirty way to get the
-    initalization done: simply set [player_sprites] to an array with [None]. *)
+    to initalize [player_sprites], we'd need to already have an array to pass
+    into the [ref] function. However, values of type texture can only be made
+    using values of type Tsdl.Sdl.window, and the first time we build a window
+    is inside main.ml, which is outside the scope of module Gamedata. Using
+    texture options gives a quick and dirty way to get the initalization done:
+    simply set [player_sprites] to an array with [None] values. *)
 
 val tiles : Tsdl.Sdl.texture option array ref
 (** [tiles] is a reference to an array of [Tsdl.Sdl.texture] options of tile
     sprites. It serves an identical purpose to [player_sprites] but for tiles,
-    and it's an array of texture options for the same reason [player_sprites] *)
+    and it's an array of texture options for the same reason [player_sprites] is *)
 
 val background : Tsdl.Sdl.texture option ref
 (** [background] is a reference to the texture of the background image for our
